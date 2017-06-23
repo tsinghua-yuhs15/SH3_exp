@@ -1,0 +1,20 @@
+
+	.SECTION	ST,CODE,ALIGN=4
+	.import		_system_init
+
+;注意，除SP_BASE外，其它变量均在includes.h文件中设置
+ 
+SP_BASE		.equ	h'0D000000
+
+	nop					
+	nop					
+	nop					
+	nop					
+	nop					
+	mov.l	#SP_BASE, r15	; 设置堆栈指针地址
+
+	mov.l   #_system_init,r2       ; 转到初始化程序
+	jmp     @r2
+	nop
+
+	.END

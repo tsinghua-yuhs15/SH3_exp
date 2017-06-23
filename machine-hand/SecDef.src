@@ -1,0 +1,64 @@
+;***************************************************************************
+; File: SecDef.src
+; Description: 段定义
+;***************************************************************************
+; 如果程序中含有初始化的变量，请务必加入此文件
+;	
+;	VBR = h'0c000000	                           offset				
+;                 +-----------------------+ -----   H'0
+;                 |          ST           |   ^
+;                 +-----------------------+   |
+;                 +-----------------------+   |     H'100
+;                 |       GEEntry         |   |
+;                 +-----------------------+   |
+;                 +-----------------------+   |     H'400
+;                 |       TLBEntry        |   |
+;                 +-----------------------+   | (ROM)
+;                 +-----------------------+   |     H'600
+;                 |       INTEntry        |   |
+;                 +-----------------------+   |
+;                 +-----------------------+   |     H'00001000
+;                 |    Constant Area      |   |
+;                 |         (C)           |   |
+;         (1)---->+-----------------------+   |
+;                 | Initialized Data Area |   |
+;                 |         (D)           |   |
+;         (6)---->+-----------------------+   |
+;                 |    Program Area       |   |
+;                 |         (P)           |   v
+;         (7)---->+-----------------------+ -----
+;         (2)---->+-----------------------+ -----   H'00010000
+;                 | Initialized Data Area |   ^
+;         (3)---->|         (R)           |   |
+;         (4)---->+-----------------------+   |
+;                 | Non-Initialized Data  |   |
+;                 |         Area          |   | (RAM)
+;                 |         (B)           |   |
+;         (5)---->+-----------------------+   |
+;                 +-----------------------+   |
+;                 |     Dynamic Area      |   v
+;                 +-----------------------+ -----
+;
+         .SECTION P,CODE,ALIGN=4
+         .SECTION D,DATA,ALIGN=4
+         .SECTION R,DATA,ALIGN=4
+         .SECTION B,DATA,ALIGN=4
+         .SECTION C,DATA,ALIGN=4
+
+__D_ROM: .DATA.L  (STARTOF D)              ; start address of section D (1)
+__D_BGN: .DATA.L  (STARTOF R)              ; start address of section R (2)
+__D_END: .DATA.L  (STARTOF R) + (SIZEOF R) ; end address of section R   (3)
+__B_BGN: .DATA.L  (STARTOF B)              ; start address of section B (4)
+__B_END: .DATA.L  (STARTOF B) + (SIZEOF B) ; end address of section B   (5)
+__P_BGN: .DATA.L  (STARTOF P)              ; start address of section P (6)
+__P_END: .DATA.L  (STARTOF P) + (SIZEOF P) ; end address of section P   (7)
+
+         .EXPORT  __B_BGN
+         .EXPORT  __B_END
+         .EXPORT  __D_BGN
+         .EXPORT  __D_END
+         .EXPORT  __D_ROM
+         .EXPORT  __P_BGN
+         .EXPORT  __P_END
+
+         .END
